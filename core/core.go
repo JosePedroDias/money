@@ -1,6 +1,9 @@
 package core
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -38,4 +41,35 @@ const dateLayout string = "2006-01-02"
 
 func YMD2Time(s string) (time.Time, error) {
 	return time.Parse(dateLayout, s)
+}
+
+func MovimentosFromJSON(jsonFilePath string) ([]Movimento, error) {
+	//var movimentos []Movimento
+	movimentos := make([]Movimento, 0)
+	f, err := os.Open(jsonFilePath)
+	if err != nil {
+		return movimentos, err
+	}
+	jsonS, err := ioutil.ReadAll(f)
+	if err != nil {
+		return movimentos, err
+	}
+	err = json.Unmarshal(jsonS, &movimentos)
+	if err != nil {
+		return movimentos, err
+	}
+	return movimentos, nil
+}
+
+func MovimentosToJSON(movimentos []Movimento, jsonFilePath string) error {
+	jsonBytes, err := json.Marshal(movimentos)
+	// jsonBytes, err := json.MarshalIndent(movimentos, "", "\t") // prefix, indent
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(jsonFilePath, jsonBytes, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }

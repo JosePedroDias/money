@@ -1,7 +1,6 @@
 package montepio
 
 import (
-	"container/list"
 	"encoding/csv"
 	iconv "github.com/djimenez/iconv-go"
 	"github.com/josepedrodias/money/core"
@@ -13,8 +12,8 @@ func trim(s string) string {
 	return strings.Trim(s, " \t")
 }
 
-func ImportCSV(filePath string) (*list.List, error) {
-	movimentos := list.New()
+func ImportCSV(filePath string) ([]core.Movimento, error) {
+	movimentos := make([]core.Movimento, 0)
 
 	// open file
 	f, err := os.Open(filePath)
@@ -92,7 +91,7 @@ func ImportCSV(filePath string) (*list.List, error) {
 			return movimentos, err
 		}
 
-		movimentos.PushBack(mov)
+		movimentos = append(movimentos, mov)
 	}
 
 	return movimentos, nil
